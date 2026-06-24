@@ -6,6 +6,32 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.13] - 2026-06-23
+
+### Fixed
+- The Settings window now gets a Dock icon and the app menu bar (Stenobar /
+  File / Edit …) like the Library and Thoughts windows, instead of leaving the
+  app menu-bar-only — so you can click the Dock icon to return to it. The main
+  menu bar also no longer intermittently fails to appear when a Library or
+  Thoughts window is open and frontmost.
+- The Dock icon's right-click menu now lists the open Library (Recordings) and
+  Thoughts windows so you can jump straight to them; previously only Settings
+  appeared there.
+
+## [1.0.0-beta.12] - 2026-06-22
+
+### Fixed
+- Microphone recordings from external USB audio interfaces that deliver
+  24-bit (or 32-bit) integer PCM — e.g. the Focusrite Scarlett 2i2 — no longer
+  capture as static/buzz. The WAV writer previously decoded every non-float
+  buffer as 16-bit, misaligning every sample; it now decodes 16/24/32-bit
+  signed PCM correctly.
+- The selected microphone is now remembered across recordings and app launches
+  instead of snapping back to the system-default input each time. The global
+  hotkey honors the same saved device.
+
+## [1.0.0-beta.11] - 2026-06-15
+
 ### Added
 - Initial public release: system + mic capture, library, multi-provider
   transcription and summarization, global-hotkey dictation HUD, and the
@@ -39,22 +65,6 @@ follows semantic versioning.
   every LLM delta.
 
 ### Fixed
-- The Settings window now gets a Dock icon and the app menu bar (Stenobar /
-  File / Edit …) like the Library and Thoughts windows, instead of leaving the
-  app menu-bar-only — so you can click the Dock icon to return to it. The main
-  menu bar also no longer intermittently fails to appear when a Library or
-  Thoughts window is open and frontmost.
-- The Dock icon's right-click menu now lists the open Library (Recordings) and
-  Thoughts windows so you can jump straight to them; previously only Settings
-  appeared there.
-- Microphone recordings from external USB audio interfaces that deliver
-  24-bit (or 32-bit) integer PCM — e.g. the Focusrite Scarlett 2i2 — no longer
-  capture as static/buzz. The WAV writer previously decoded every non-float
-  buffer as 16-bit, misaligning every sample; it now decodes 16/24/32-bit
-  signed PCM correctly.
-- The selected microphone is now remembered across recordings and app launches
-  instead of snapping back to the system-default input each time. The global
-  hotkey honors the same saved device.
 - Numbered lists in summaries no longer render every item as "1." — items
   keep their numbers from the markdown source, including when paragraphs sit
   between the numbered points (the shape LLM summaries usually produce).
