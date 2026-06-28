@@ -8,6 +8,15 @@ follows semantic versioning.
 
 ## [1.0.0-beta.14] - 2026-06-28
 
+### Added
+- Obsidian as a Thoughts destination: route a captured thought straight into
+  your Obsidian vault as a new note via the obsidian:// URL scheme, configured
+  in Settings → Integrations.
+- Bear as a Thoughts destination: file a thought as a Bear note over Bear's
+  x-callback-url API, with confirmation that the note was actually created.
+- Notion as a Thoughts destination: connect your workspace with OAuth and send a
+  thought as a new page under a parent page you choose.
+
 ## [1.0.0-beta.13] - 2026-06-23
 
 ### Fixed
