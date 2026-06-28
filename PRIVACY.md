@@ -58,6 +58,18 @@ When you select one of these, you are sending data to a third party governed by 
 
 API keys you provide for these services are stored in your macOS Keychain, scoped to Stenobar (service prefix `com.narrowstacks.Stenobar`). They are not transmitted anywhere except to the corresponding provider when you make a request.
 
+## Connecting accounts (OAuth)
+
+Some Thoughts destinations (Notion, TickTick) connect with OAuth instead of a pasted API key. Two of these providers require an HTTPS redirect URL and will not redirect to a local address, so the sign-in flow routes through a small page we host at `https://stenobar.app/oauth/<provider>`.
+
+**What this page does and does not see:**
+
+- When you approve access, the provider redirects your browser to that page with a **one-time authorization code**. That code momentarily passes through stenobar.app's hosting (and may appear in standard edge/CDN request logs) before the page hands it back to Stenobar running on your Mac.
+- The page **never receives your access token, and never receives any of your account data.** It forwards only the short-lived code.
+- The actual exchange — swapping that code for an access token — happens **directly from your Mac to the provider**. The resulting token is stored only in your macOS Keychain. The code is single-use and useless without the application's client secret, which is built into the app and never leaves your Mac.
+
+This is the one point where our infrastructure touches the connect flow at all; it carries no audio, no transcripts, no tokens, and no readable account data.
+
 ## macOS permissions Stenobar requests
 
 | Permission | Why | Required? |

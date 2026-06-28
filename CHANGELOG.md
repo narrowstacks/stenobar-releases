@@ -6,6 +6,8 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.14] - 2026-06-28
+
 ## [1.0.0-beta.13] - 2026-06-23
 
 ### Fixed
