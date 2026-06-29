@@ -6,6 +6,28 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.15] - 2026-06-28
+
+### Added
+- List-aware Thoughts: when a dictated thought is clearly an enumeration,
+  Stenobar formats its description as a list instead of a comma run-on, and
+  each destination renders it natively — Todoist sub-tasks, TickTick and
+  Things checklist items, Notion bulleted lists, Apple Notes bullet lists,
+  and structured items in the Shortcuts payload. Obsidian and Bear get the
+  markdown list for free, and Apple Reminders keeps it as a text list in the
+  note. The Thoughts Inbox shows list descriptions with per-category glyphs
+  (checkboxes for tasks and reminders, bullets for notes).
+
+### Changed
+- Captured thoughts now keep a cleaned-up description separate from your
+  verbatim words. Each thought carries an editable, reformatted description
+  plus the original spoken text shown read-only beneath it, in both the Inbox
+  and the preview sheet. Synced notes send the tidied description by default; a
+  new "Include original words in synced notes" setting appends the verbatim
+  capture below it for apps like Reminders, Notes, and Todoist.
+- The Thoughts Inbox now shows a processing spinner on a thought's row while it
+  is still being classified and routed.
+
 ## [1.0.0-beta.14] - 2026-06-28
 
 ### Added
