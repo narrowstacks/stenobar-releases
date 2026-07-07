@@ -6,6 +6,20 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.18] - 2026-07-07
+
+### Added
+- Summaries: each recording can now carry its own optional "key terms &
+  context" — names and their correct spellings, jargon, or topics to focus
+  on — which is appended to whichever summary prompt you've selected. Set it
+  from the book icon next to the summary controls; it stays with the
+  recording, so re-summarizing keeps using it.
+
+### Changed
+- New installs now default AssemblyAI transcription to the newer
+  `universal-3-5-pro` model, falling back to `universal-3-pro`. If you've
+  customized the model list in Settings, your selection is unchanged.
+
 ## [1.0.0-beta.17] - 2026-07-06
 
 ### Fixed
