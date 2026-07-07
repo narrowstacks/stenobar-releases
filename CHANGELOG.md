@@ -6,6 +6,26 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.17] - 2026-07-06
+
+### Fixed
+- If the system audio capture stream dies mid-recording (a rare macOS
+  capture-engine failure), Stenobar now stops cleanly, saves everything
+  captured up to that point, and explains what happened in the menu-bar
+  popover — previously the recording timer kept running while nothing was
+  being captured.
+- Auto-delete no longer removes a recording from the library when moving its
+  files to the Trash fails: the recording stays fully intact and the cleanup
+  is retried on the next sweep, instead of leaving orphaned audio files with
+  their title, tags, and markers lost.
+- Failures that previously printed only to the developer console (disk-full
+  write errors, library save errors, screen-capture refresh errors) are now
+  written to the diagnostics log, so problem reports are actually diagnosable.
+
+### Changed
+- Performance: smoother interface while recording and dictating, faster
+  live-streaming summaries, and snappier typing and search in large libraries.
+
 ## [1.0.0-beta.16] - 2026-07-06
 
 ### Added
