@@ -6,6 +6,8 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.16] - 2026-07-06
+
 ### Added
 - Summary prompts: save a library of named prompts, assign one per project, and
   pick one ad-hoc when summarizing a recording.
