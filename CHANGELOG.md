@@ -6,6 +6,13 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+### Added
+- Summary prompts: save a library of named prompts, assign one per project, and
+  pick one ad-hoc when summarizing a recording.
+- Per-project summary AI: each project can override the summary provider and
+  model, and tags/title generation can use a separate provider and model (both
+  globally and per project).
+
 ## [1.0.0-beta.15] - 2026-06-28
 
 ### Added
