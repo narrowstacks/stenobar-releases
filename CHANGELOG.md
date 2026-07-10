@@ -6,6 +6,38 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.19] - 2026-07-09
+
+### Added
+- Speaker labels on local transcripts: Parakeet transcription can now work
+  out who is speaking and tag each line, splitting lines where the speaker
+  changes. Turn on "Speaker diarization" in Settings → Transcription and
+  download the one-time ~35 MB model; it runs entirely on-device. Leave the
+  model undownloaded and transcription works exactly as before, without
+  labels.
+- Parakeet transcripts now have per-line timestamps: local transcriptions
+  split into timed lines, so playback follows the transcript and clicking a
+  line jumps the audio — just like cloud transcripts. (Runs using key-term
+  boosting keep single-block text for now.)
+
+### Changed
+- Privacy: local Parakeet transcription and dictation are now enforced
+  offline. The app touches the network only for model downloads you start
+  in Settings (and dictation's first-run model download). If a downloaded
+  model is damaged, you'll now see an error asking you to re-download it
+  instead of the app silently re-fetching it.
+
+### Fixed
+- Local (Parakeet) transcription and dictation of anything longer than about
+  15 seconds could drop words, lose the ending, or come back empty — showing
+  "No speech detected" after real speech. Long audio now runs through the
+  streaming engine, and long transcripts get the same per-line timestamps and
+  speaker labels as short ones (previously they collapsed to a single
+  untimed block attributed to one speaker).
+- Dark mode: the strip above the recordings list no longer lags behind the
+  rest of the window while you drag the window or play video behind it. The
+  same artifact is gone from the Thoughts window.
+
 ## [1.0.0-beta.18] - 2026-07-07
 
 ### Added
