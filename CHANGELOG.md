@@ -6,6 +6,21 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.20] - 2026-07-09
+
+### Fixed
+- Speaker labels and per-line timestamps now actually work on long local
+  transcriptions. beta.19 introduced a bug that shuffled words at the seams
+  between processing windows; the app noticed the transcript no longer matched
+  and threw the timed lines away, leaving one untimed block labelled with a
+  single speaker. Anything past roughly half a minute was affected.
+- Setting "key terms & context" on a recording no longer costs you timestamps
+  and speaker labels. Locally transcribed recordings with key terms were always
+  returned as one unlabelled block, at any length.
+- Locally transcribing with key terms no longer silently drops pieces of the
+  transcript — on a 15-minute recording it was losing a few hundred characters
+  scattered through the middle.
+
 ## [1.0.0-beta.19] - 2026-07-09
 
 ### Added
