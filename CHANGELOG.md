@@ -6,6 +6,20 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.21] - 2026-07-13
+
+### Added
+- Hold a single modifier key to dictate or capture a thought. In Settings →
+  Shortcuts, each "hold" shortcut now takes an optional bare modifier — pick a
+  side (left or right) and a key (⌘ ⌃ ⌥ ⇧), and holding just that key starts
+  recording. Press any other key while it's down and the take is cancelled
+  silently, so your everyday shortcuts still work: ⌘C copies as usual and
+  nothing is transcribed or pasted. Right-side keys are the sweet spot, since
+  most shortcuts are typed with the left hand. Your existing key-combo
+  shortcuts keep working alongside it, and a modifier can drive dictation or
+  Thoughts, but not both. Needs Accessibility permission — without it the
+  modifier shortcut stays inert.
+
 ## [1.0.0-beta.20] - 2026-07-09
 
 ### Fixed
