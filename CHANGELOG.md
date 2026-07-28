@@ -6,6 +6,36 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.22] - 2026-07-27
+
+### Changed
+- Local dictation is much faster after the first use. Parakeet and WhisperKit
+  models now stay loaded for as long as Stenobar is running, so each dictation
+  after the first takes well under a second instead of around one. The models
+  also start loading in the background when Stenobar launches, so the first
+  dictation of a session no longer waits on a twenty-second model load —
+  previously that load ran at the worst possible moment, right after you
+  stopped speaking. Switching models in Settings → Dictation reloads
+  immediately so the new one is ready when you are. If you use Apple Speech or
+  a cloud provider, nothing loads and nothing changes.
+- Internal: the local transcription providers now have automated test coverage
+  of their result handling and branch selection, which previously could only be
+  verified by hand against a downloaded model.
+
+### Fixed
+- Dictation no longer gets stuck on "Transcribing…". Ending a take almost
+  immediately — a fumbled hotkey press, or a modifier chord you thought better
+  of — used to hand the near-empty recording to the full local pipeline
+  anyway, which spent tens of seconds loading models before reporting the
+  empty transcript it could never have avoided. Takes shorter than 0.3 s are
+  now discarded up front.
+- Added a way out of a transcription that's taking too long: an ✕ on the
+  dictation HUD, or Esc. Cancelling frees the hotkey immediately instead of
+  swallowing every subsequent press, and nothing is pasted or copied.
+- A transcription that never returns at all now gives up after 60 seconds and
+  says so, rather than leaving dictation permanently unavailable until you
+  restart the app. Applies to the Thoughts HUD as well.
+
 ## [1.0.0-beta.21] - 2026-07-13
 
 ### Added
