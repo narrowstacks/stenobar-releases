@@ -6,6 +6,44 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.23] - 2026-08-03
+
+### Changed
+- Transcription key terms now actually reach the provider. The old
+  "Prompt / Key terms" box sent everything as one block of prose, so a list of
+  names and jargon typed into it was handed to AssemblyAI as a paragraph —
+  which their own guidance warns against, and which meant key terms were doing
+  almost nothing. Settings → Transcription now has two separate fields:
+  **Context**, for a sentence or two describing the recording, and
+  **Key terms**, for the names, product names, and jargon you want recognised.
+  Each goes to the provider's proper channel. Your existing text is moved into
+  whichever field fits it on first launch — a comma-separated list becomes key
+  terms, a sentence becomes context — and the original is kept, so nothing is
+  lost if the guess is wrong. Per-project overrides get the same two fields.
+- Key terms now work on Deepgram's older models. Nova-2, Enhanced, and Base
+  previously got no term biasing at all; they now use Deepgram's keyword
+  boosting, while Nova-3 continues to use key-term prompting.
+- Dictation sends key terms to AssemblyAI. Settings → Speech has a Key terms
+  field when AssemblyAI is the dictation provider, kept separate from the
+  Library's list so short dictated commands can be biased differently from long
+  recordings.
+- Picking an AssemblyAI speech model is now a dropdown instead of a
+  comma-separated text box, with a primary model and an optional fallback for
+  languages the primary doesn't cover.
+- Each provider's limits are now shown as you type, in that provider's own
+  units — terms remaining, words remaining, or an estimated token count — and
+  the Context field is hidden entirely for models that don't accept one.
+
+### Fixed
+- The default AssemblyAI fallback model was not a real model. New installs
+  shipped with `universal-3-pro`, which exists only in AssemblyAI's streaming
+  API, so the fallback silently did nothing for languages the primary model
+  doesn't support. It is now `universal-2`, and existing settings are corrected
+  on launch.
+- Key-term lists that were too long for a provider could fail the whole
+  transcription rather than being trimmed. Lists are now clamped to each
+  provider's documented limit before the request is sent.
+
 ## [1.0.0-beta.22] - 2026-07-27
 
 ### Changed
