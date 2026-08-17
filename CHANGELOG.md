@@ -6,6 +6,20 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.25] - 2026-08-17
+
+### Fixed
+- Transcripts are no longer reordered when displayed. beta.24 rebuilt
+  conversational turns on every transcript with speaker labels, but that repair
+  is only correct for split-channel recordings, where the two streams arrive
+  interleaved mid-sentence. On an ordinary single-channel transcript there is
+  nothing to reassemble, so it pulled a speaker's later reply back onto their
+  earlier line — printing answers ahead of the questions they answered, and
+  stacking several replies under one speaker heading. Turns are now joined
+  across another speaker only where the two genuinely overlap in time. Affected
+  transcripts were only being displayed wrongly; nothing on disk was altered,
+  and they read correctly again on reload.
+
 ## [1.0.0-beta.24] - 2026-08-16
 
 ### Fixed
