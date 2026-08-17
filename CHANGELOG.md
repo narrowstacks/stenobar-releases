@@ -6,6 +6,31 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.24] - 2026-08-16
+
+### Added
+- AssemblyAI can now transcribe system audio and microphone as separate
+  channels, making the microphone speaker reliably appear as **Me** instead of
+  relying on probabilistic diarization. Enable **Transcribe channels
+  separately** in Settings → Transcription, globally or per project. It is
+  available on compatible AssemblyAI models, requires speaker labels, and is
+  off by default because AssemblyAI bills each channel separately.
+
+### Changed
+- Split-channel AssemblyAI transcripts are rebuilt into readable
+  conversational turns when speakers overlap, instead of rendering the
+  provider's word-sized, interleaved fragments. Existing transcripts get the
+  same repair when loaded or reprocessed, without another paid transcription.
+
+### Fixed
+- The WhisperKit `large-v3-turbo` model now downloads successfully. Stenobar
+  was passing its hyphenated display name to a model repository that names the
+  download `large-v3_turbo`, so WhisperKit could not find a match.
+- Combined-track exports now respect whether the cached track was created in
+  Mixed or Split mode. This prevents a Mixed track from being reused where
+  separate left/right channels were requested, and avoids uploading a large
+  lossless library file for AssemblyAI transcription.
+
 ## [1.0.0-beta.23] - 2026-08-03
 
 ### Changed
