@@ -22,27 +22,28 @@ for in-app updates.
 1. Download the latest **Stenobar.dmg** from the
    [Releases page](https://github.com/narrowstacks/stenobar-releases/releases/latest).
 2. Open the DMG and drag **Stenobar** into your **Applications** folder.
-3. Stenobar is currently distributed without an Apple Developer ID
-   signature, so macOS Gatekeeper blocks the very first launch. To open it
-   once, do **either** of:
-   - Run this in Terminal:
-     `xattr -dr com.apple.quarantine /Applications/Stenobar.app`, then open
-     Stenobar normally, **or**
-   - Try to open Stenobar, then go to **System Settings → Privacy &
-     Security**, scroll to the message about Stenobar being blocked, and
-     click **Open Anyway**.
+3. Open it. That's it — no Terminal commands and no Gatekeeper detour.
 
-After the first launch it opens normally, and future updates are delivered
-automatically through Sparkle.
+Every build is signed with an Apple Developer ID certificate and
+notarized by Apple, with the notarization ticket stapled to the DMG, so
+macOS verifies it offline on first launch. (Builds before 1.0.0-beta.10
+were unsigned and needed the old `xattr` workaround; that no longer
+applies, and updating from one of those builds clears it.)
+
+Updates arrive automatically through Sparkle. **Settings → General →
+Software Update** controls whether it checks automatically and whether
+you're on the beta channel — turn **Receive beta updates** on to get
+`1.0.0-beta.N` builds as they ship, off to sit on stable releases only.
 
 ## Requirements
 
 - macOS 26 or newer (the deployment target is macOS 26 so that Apple
   Intelligence / Foundation Models are available unconditionally for
   the Thoughts router)
-- Apple Silicon recommended (required for WhisperKit and for the
-  on-device Apple Intelligence router; everything else runs fine on
-  Intel)
+- Apple Silicon recommended — required for the local transcription
+  engines (Parakeet, WhisperKit) and for the on-device Apple
+  Intelligence router and summarizer. Everything else runs fine on
+  Intel.
 
 ## Highlights
 
@@ -55,22 +56,28 @@ automatically through Sparkle.
 - **Crash-safe** — audio is written as raw PCM WAV with the header
   flushed every few seconds. If something crashes mid-recording, the
   audio is still there when you come back.
-- **Hold-to-dictate** — hold a global hotkey, speak, release. Stenobar
-  transcribes locally using Whisper or the macOS's SpeechAnalyzer and pastes the text into whatever app you're using.
+- **Hold-to-dictate** — hold a global hotkey (or just one modifier key),
+  speak, release. Stenobar transcribes and pastes the text into whatever
+  app you're using — on-device by default, with streaming cloud engines
+  available if you want them.
 - **Thoughts** — a second dictation hotkey for fleeting ideas: speak,
-  release, and Stenobar transcribes locally, uses an LLM (Apple
-  Intelligence on-device by default, or your choice of Anthropic /
-  OpenAI / OpenRouter / Ollama) to classify what you said as a task,
-  note, reminder, or "review later," and routes it to the right
-  destination — Apple Reminders, Apple Notes, Todoist, a macOS
-  Shortcut, or a local Inbox.
-- **Bring your own transcription** — pick a local engine (Apple
-  SpeechAnalyzer, WhisperKit) or a cloud one (AssemblyAI, Deepgram,
+  release, and Stenobar transcribes, uses an LLM (Apple Intelligence
+  on-device by default, or your choice of Anthropic / OpenAI /
+  OpenRouter / Ollama) to classify what you said as a task, note,
+  reminder, or "review later," and routes it to the right destination —
+  Apple Reminders, Apple Notes, Todoist, TickTick, Things, Obsidian,
+  Bear, Notion, a macOS Shortcut, or a local Inbox.
+- **Bring your own transcription** — pick a local engine (Parakeet,
+  WhisperKit, Apple Speech) or a cloud one (AssemblyAI, Deepgram,
   OpenAI, Groq, Google). Keys are stored in the macOS Keychain.
-- **Bring your own summaries** — Anthropic, OpenAI, OpenRouter, or a
-  local Ollama instance. Swap and compare providers any time.
+- **Bring your own summaries** — Apple Intelligence on-device, or
+  Anthropic, OpenAI, OpenRouter, a local Ollama instance, or any
+  OpenAI-compatible endpoint. Swap and compare providers any time.
 - **Searchable library** — full-text search across titles, tags, and
   transcript bodies; filter by date, sort, star, project, tag.
+- **Scriptable** — a `stenobar://` URL scheme, App Intents for
+  Shortcuts and Siri, and a JSON library index for Raycast, Alfred, or
+  your own scripts.
 
 ## First run
 
@@ -82,16 +89,19 @@ On first launch the onboarding window will:
    allow the app to paste dictation results into the active app.
 2. Let you pick where recordings should be saved (defaults to
    `~/Documents/Stenobar/recordings/`).
-3. Optionally set up keyboard shortcuts for starting and stopping
-   recordings, dictation, and Thoughts capture.
-4. Set up **projects**, which are organized folders that group related
+3. Set up **projects**, which are organized folders that group related
    recordings.
-5. Configure your **transcription** and **summary** providers — you can
-   skip this and come back to it from **Settings** at any time.
+4. Optionally set up keyboard shortcuts for starting and stopping
+   recordings, dropping markers, dictation, and Thoughts capture.
+5. Configure your **transcription**, **dictation**, and **summary**
+   providers — you can skip this and come back to it from **Settings**
+   at any time.
 6. Optionally configure **Thoughts** — pick a router (Apple Intelligence
    by default, or Anthropic / OpenAI / OpenRouter / Ollama) and the
    defaults for where tasks, notes, reminders, and review-later items
    should go.
+7. Run a short test recording to confirm the capture pipeline works
+   end to end before you rely on it.
 
 You can revisit any of these steps from **Stenobar → Settings**, or `Cmd + ,`.
 
@@ -110,34 +120,45 @@ You can revisit any of these steps from **Stenobar → Settings**, or `Cmd + ,`.
   the last-used selection.
 - **Microphone picker** — any Core Audio input device, with the system
   default pre-selected.
+- **Presets** — save a source + microphone + project combination by
+  name and pick it from the menu bar next time instead of rebuilding
+  the setup.
 - **Projects** — assign a recording to a project at start time. Projects
   map to on-disk subfolders (e.g.
   `recordings/<project-slug>/<UUID>/`) and can carry per-project
-  transcription overrides.
+  transcription and summary overrides.
 - **Crash-safe capture** — always writes raw PCM WAV (`system.wav` +
   `mic.wav`) and flushes the WAV header every ~5 s, so a crash leaves
   usable audio behind. Format conversion (M4A / FLAC) happens at export
   time.
 - **Configurable format** — 16/24/44.1/48 kHz, mono or stereo, set in
-  **Settings → General → Recording format**.
+  **Settings → Recording → Format**.
 - **Combined-track stitching** — produces a third `combined.wav` from
   system + mic, with a configurable layout: Mono, Stereo (L=System,
   R=Mic), or Stereo Mixed Down. Re-stitchable from the recording detail
   view if you change the default later.
-- **Global hotkey** (Settings → General → Global shortcut) — toggle
-  recording from anywhere with the last-used source and mic.
-- **Hold-to-dictate hotkey** (Settings → Dictation → Hotkey) — hold a
-  shortcut to record from the mic only; on release the audio is
-  transcribed locally via Apple Speech or WhisperKit and either pasted
-  into the focused app or copied to the clipboard. A floating HUD pill
-  shows live partial text.
+- **Markers** — a **Drop marker** hotkey flags the current moment while
+  you record; markers show up as tappable pins on the playback
+  waveform, so "wait, say that again" is one keystroke instead of a
+  note to yourself.
+- **Global hotkey** (Settings → Shortcuts) — toggle recording from
+  anywhere with the last-used source and mic.
+- **Hold-to-dictate hotkey** (Settings → Shortcuts) — hold a shortcut to
+  record from the mic only; on release the audio is transcribed and
+  either pasted into the focused app or copied to the clipboard. A
+  floating HUD pill shows live partial text. A tap-to-toggle variant
+  runs the same flow hands-free, and either can be bound to a single
+  modifier key (hold right-Option, say) instead of a chord — pressing
+  any other key while it's down cancels silently, so your normal
+  shortcuts keep working.
 - **Crash recovery** — on launch the app scans the recordings folder
   for orphan in-progress folders and registers them as recovered
   recordings.
 - **Audio import** — drop audio files (WAV, MP3, M4A, AIFF, FLAC, CAF)
   onto the Recordings window or use the Import toolbar button to add
   existing files to the library; they can then be transcribed, tagged, summarized and
-  searched for.
+  searched for. A pair of files can be imported as one recording's
+  system and mic tracks.
 
 ### Library window
 
@@ -151,35 +172,54 @@ You can revisit any of these steps from **Stenobar → Settings**, or `Cmd + ,`.
 - **Star** recordings to keep them past the retention window.
 - **Tags** — add, remove, search by, and (with a configured summary
   provider) ask the LLM to suggest tags from the transcript.
+- **Multi-select** rows to star, tag, move between projects, or delete
+  in one pass.
 - **Drag-and-drop** between projects in the sidebar — folders move on
   disk to follow the new project slug.
 - **Empty/broken track detection** — an orange warning on a row or in
   the detail view means one of the WAV files is empty (≤ 44 bytes, just
   a header). Export options that depend on a missing track are
   disabled.
-- **Playback** with a follow-along player that supports system, mic, or
-  any combined layout.
+- **Playback** with a waveform scrubber (markers included) that follows
+  along with the transcript, plays system, mic, or any combined layout,
+  and keeps going in a mini player while you browse other recordings.
+- **Find and replace** inside a transcript or summary, for fixing a
+  misheard name everywhere at once.
 
 ### Transcription
 
 Settings → Transcription. Each project can override the global provider
-or model in Settings → Projects.
+or model in Settings → Projects, and **Auto-transcribe when recording
+ends** hands off automatically as soon as you stop.
 
 Supported backends:
 
+- **Parakeet** (local, Apple Silicon) — NVIDIA's Parakeet via
+  FluidAudio; fast, fully on-device, and the default. Optional
+  on-device speaker labels and per-line timestamps (one-time ~35 MB
+  model download).
 - **WhisperKit** (local, Apple Silicon) — pick a model variant; nothing
   leaves the device.
-- **Apple SpeechAnalyzer** (local) — no API key, no network. Per-locale
+- **Apple Speech** (local) — no API key, no network. Per-locale
   models download on first use.
-- **AssemblyAI** (cloud) — speaker diarization, language detection,
-  custom prompts.
+- **AssemblyAI** (cloud) — speaker diarization, language detection, and
+  an optional **Transcribe channels separately** mode that sends system
+  and mic as two channels so your own voice is reliably labelled
+  **Me** instead of guessed at.
 - **Deepgram** (cloud) — Nova-3 / Nova-2, diarization, key-term
-  prompting.
+  prompting (keyword boosting on the older models).
 - **OpenAI** (cloud) — `gpt-4o-transcribe` / `gpt-4o-mini-transcribe` /
   `whisper-1` (only `whisper-1` returns segment timestamps).
 - **Groq** (cloud) — Whisper Large v3 / Turbo on Groq's LPU, very fast.
 - **Google Cloud Speech-to-Text v2** (cloud) — service-account JSON +
   project ID; sync recognize is capped at 60 s / 10 MB per request.
+
+**Context** and **Key terms** are separate fields: a sentence or two
+describing the recording goes in one, the names, product names, and
+jargon you want recognised go in the other, and each is sent through
+the provider's proper channel. Remaining term/word/token budget is
+shown as you type, in that provider's own units. Both can be set
+globally, per project, or per recording.
 
 API keys live in the macOS Keychain. Post-processing options (strip
 speaker tags, remove fillers, recapitalize, rename diarized A/B labels)
@@ -193,6 +233,8 @@ segment timing.
 
 Settings → Summary. Pick one of:
 
+- **Apple Intelligence** (on-device, no key, no network — requires a
+  model-capable Mac with Apple Intelligence enabled)
 - **Anthropic** (Claude Haiku / Sonnet / Opus)
 - **OpenAI** (Chat Completions; reuses the transcription OpenAI key)
 - **OpenRouter** (one key, many providers — model is `provider/model`)
@@ -204,11 +246,20 @@ Each recording gets a Summary pane in the detail view, plus a "Suggest"
 button on the tags row that uses the same provider to pull tag
 candidates out of the transcript.
 
+- **Prompt library** — save named summary prompts ("meeting minutes",
+  "interview pull-quotes", "lecture outline"), set one as a project's
+  default, or pick one ad-hoc for a single run.
+- **Per-project provider and model**, plus a separate, usually cheaper
+  model for tag and title suggestions.
+- **Per-recording key terms and context** so the summarizer knows the
+  names and jargon in that particular recording.
+
 ### Thoughts
 
 Settings → Thoughts. A second dictation pipeline for capturing
-fleeting ideas without losing flow. Press one of two dedicated global
-hotkeys — hold-to-capture or tap-to-toggle — speak, and Stenobar:
+fleeting ideas without losing flow. Press one of the dedicated global
+hotkeys — hold-to-capture, tap-to-toggle, or a single held modifier
+key — speak, and Stenobar:
 
 1. Transcribes the utterance locally (same engine as the dictation
    hotkey).
@@ -216,7 +267,9 @@ hotkeys — hold-to-capture or tap-to-toggle — speak, and Stenobar:
    four categories: Task, Note, Reminder, or Review later.
 3. **Routes** the result to whichever destination you've mapped to that
    category, with the structured fields (title, body, due date) the
-   destination wants.
+   destination wants. A thought that is plainly an enumeration —
+   "shopping list: milk, eggs, coffee" — arrives as a real list in
+   destinations that have one.
 
 Routers:
 
@@ -229,10 +282,20 @@ Destinations:
 
 - **Apple Reminders** and **Apple Notes** (native, no API key needed —
   uses EventKit and AppleScript respectively).
-- **Todoist** (REST API; token in Keychain).
+- **Todoist**, **TickTick** (sign in once with OAuth; tokens live in
+  the Keychain).
+- **Things** and **Bear** (via their own URL schemes — no account
+  needed, just the app installed).
+- **Obsidian** — a new note in a vault folder, or appended as a section
+  to a running daily/inbox file.
+- **Notion** — connect your workspace with OAuth and send pages to a
+  chosen database or page.
 - **macOS Shortcuts** (any Shortcut you have installed — Stenobar
   passes the transcript and classification as input).
 - **Stenobar Inbox** — a local triage queue, always available.
+
+Connections are managed from **Settings → Integrations**, which shows
+each service's status in one place.
 
 Three **confirmation modes** trade speed for control:
 
@@ -247,18 +310,43 @@ Every captured thought is persisted in an **Inbox window** with full
 status (sent / pending / failed / review-later), classifier output,
 and a deep link back to the destination item where the destination
 provides one. Failed sends retry with exponential backoff and can be
-re-routed manually from the Inbox.
+re-routed manually from the Inbox; thoughts interrupted by a quit or
+crash are recovered on the next launch.
 
 The Thoughts router is *separate* from the Summary provider — you can
 mix and match, e.g. Apple Intelligence for routing thoughts and
 Anthropic for transcript summaries.
 
+### Automation & integrations
+
+Stenobar can be driven by external tools (Shortcuts, Siri, Spotlight, a
+Raycast extension, Alfred, shell scripts) through three surfaces:
+
+- **App Intents** — start, stop, or toggle a recording, dictate,
+  capture a thought, or fetch the last recording from Shortcuts, Siri,
+  and Spotlight.
+- **`stenobar://` URL scheme** — open the library, jump to a recording
+  (`stenobar://recording/<uuid>`), open a project or the Thoughts
+  Inbox, or fire a feature the same way a hotkey would
+  (`stenobar://record/toggle`, `stenobar://dictate`,
+  `stenobar://thought`, `stenobar://marker`). Right-click a recording →
+  **Copy Link** to grab its deep link.
+- **Library index** — a JSON snapshot of recordings and thoughts at
+  `~/Library/Application Support/Stenobar/index.json`, refreshed on
+  every change, for tools that need to *search* (the URL scheme can't
+  return data). Each entry includes its `stenobar://` deep link.
+
 ### Storage & retention
 
 - Default location: `~/Documents/Stenobar/recordings/`. Customizable
-  from **Settings → General → Recordings folder** (older builds used
+  from **Settings → Library → Recordings folder** (older builds used
   Application Support and that location is preserved on upgrade).
 - SwiftData store: `library.sqlite` next to the recordings folder.
+- **Library size** — see what the library is using on disk and
+  optionally re-encode existing recordings to a lossless **FLAC** or
+  **ALAC** container. Capture keeps writing WAV either way; this only
+  re-compresses files already on disk, replacing each atomically and
+  keeping the original if it wouldn't actually shrink.
 - **Auto-delete retention** — optionally Trash unstarred recordings
   older than N days. Starred recordings are always kept; deletions go
   to the macOS Trash so they can be recovered.
@@ -270,11 +358,11 @@ Anthropic for transcript summaries.
 ## Privacy
 
 - Recordings stay on your Mac unless you choose a cloud transcription,
-  summary, or Thoughts router provider. Local options (WhisperKit,
-  Parakeet, Apple SpeechAnalyzer, Apple Intelligence, Ollama) never
-  send audio or text off the device.
-- API keys for cloud providers (and the Todoist destination token) are
-  stored in the macOS Keychain, not in plain text.
+  summary, or Thoughts router provider. Local options (Parakeet,
+  WhisperKit, Apple Speech, Apple Intelligence, Ollama) never send
+  audio or text off the device.
+- API keys for cloud providers (and the Todoist / TickTick / Notion
+  connections) are stored in the macOS Keychain, not in plain text.
 - Cloud transcription uploads only the audio for the recording you ask
   to transcribe; it doesn't sync your library.
 - Per-provider data-flow disclosures are shown inline in onboarding
@@ -289,6 +377,9 @@ online at [stenobar.app/privacy](https://www.stenobar.app/privacy).
 
 Stenobar is in active beta. If you hit something on a real recording
 setup, please [open an issue](https://github.com/narrowstacks/stenobar-releases/issues).
+
+An iOS companion app is in closed TestFlight and isn't publicly
+available yet.
 
 ## License
 
