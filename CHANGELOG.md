@@ -6,6 +6,36 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.26] - 2026-08-17
+
+### Fixed
+- API keys no longer disappear after an update. Saving a key deleted and
+  re-added its keychain item, which reset the item to trust only the build that
+  wrote it — so after a Sparkle update every provider read as "not configured".
+  If a key was already lost this way, re-enter it once; it will stick from now on.
+- Recording could get stuck on "Starting..." forever after a failed start, with
+  the popover, hotkey, and deep links all silently doing nothing until relaunch.
+- Selecting a microphone whose sample rate differed from the audio engine's
+  produced a silent recording.
+- Stopping a long recording no longer freezes the interface.
+- Dictation and Thoughts said "No speech detected" when transcription had
+  actually failed. Both now report the real error.
+- Thoughts interrupted by a quit or crash are recovered on next launch. Timed-out
+  and rate-limited sends now retry, and retrying a Todoist task no longer
+  duplicates it.
+- Imported recordings whose mic and system tracks had different sample rates
+  came out pitch-shifted and drifting; they are now resampled to a common rate.
+- SRT and VTT exports no longer produce overlapping cues that stack or flicker.
+- Exporting a transcript from a recording's context menu now matches the
+  transcript pane for multichannel recordings.
+- Parakeet and WhisperKit models already on disk are found again after a settings
+  reset, instead of being offered as a fresh multi-hundred-megabyte download.
+- The dictation waveform updates at a consistent rate on lower-sample-rate mics.
+- Settings sidebar icons fit inside their tiles.
+
+### Changed
+- Opening recordings is faster in large libraries.
+
 ## [1.0.0-beta.25] - 2026-08-17
 
 ### Fixed
