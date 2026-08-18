@@ -143,14 +143,11 @@ You can revisit any of these steps from **Stenobar → Settings**, or `Cmd + ,`.
   note to yourself.
 - **Global hotkey** (Settings → Shortcuts) — toggle recording from
   anywhere with the last-used source and mic.
-- **Hold-to-dictate hotkey** (Settings → Shortcuts) — hold a shortcut to
-  record from the mic only; on release the audio is transcribed and
-  either pasted into the focused app or copied to the clipboard. A
-  floating HUD pill shows live partial text. A tap-to-toggle variant
-  runs the same flow hands-free, and either can be bound to a single
-  modifier key (hold right-Option, say) instead of a chord — pressing
-  any other key while it's down cancels silently, so your normal
-  shortcuts keep working.
+- **Dictation and Thoughts hotkeys** (Settings → Shortcuts) — each can
+  be held, tapped to toggle, or bound to a single modifier key (hold
+  right-Option, say) instead of a chord; pressing any other key while
+  it's down cancels silently, so your normal shortcuts keep working.
+  See [Dictation](#dictation) and [Thoughts](#thoughts) below.
 - **Crash recovery** — on launch the app scans the recordings folder
   for orphan in-progress folders and registers them as recovered
   recordings.
@@ -254,6 +251,55 @@ candidates out of the transcript.
 - **Per-recording key terms and context** so the summarizer knows the
   names and jargon in that particular recording.
 
+### Dictation
+
+Speak into whatever app you're already in. Hold the dictation hotkey (or
+tap the toggle one, or hold a single modifier key like right-Option),
+say your sentence, and let go — the transcript lands in the focused
+text field. It never touches the library: dictation audio and text are
+transient, and nothing is written to disk.
+
+A floating HUD pill appears above every app while you talk, showing a
+live waveform and partial text as it comes in. It never steals focus,
+follows you across Spaces and to whichever screen your cursor is on,
+and **Esc** cancels a take that's still transcribing.
+
+**Where the text goes** (Settings → Dictation): paste into the focused
+app, or copy to the clipboard only. Pasting synthesizes ⌘V and needs
+Accessibility permission — without it the transcript still lands on the
+clipboard, so a manual ⌘V works.
+
+**Which engine transcribes it** (Settings → Speech, shared with
+Thoughts). This is deliberately separate from the Library's
+transcription provider, so a small fast English model can handle
+dictation while a large multilingual one handles archived recordings —
+they share the same on-disk model cache:
+
+- **Parakeet** (local, default) — plus a one-time ~120 MB streaming
+  bundle that drives the live HUD preview. The preview is English-only;
+  other languages still get a correct final transcript, just no live
+  text.
+- **WhisperKit** (local) — its own model variant, independent of the
+  Library's.
+- **Apple Speech** (local) — no key, no network.
+- **AssemblyAI** (cloud, streaming) — low-latency partials over a live
+  socket.
+- **Deepgram** (cloud, streaming) — Flux, Nova-3, or Nova-3 Medical.
+
+Each engine gets its own key-terms / vocabulary list, kept separate
+from the Library's so meeting jargon doesn't bias every dictated
+sentence. Dictation also has its own microphone selection, independent
+of what recordings capture.
+
+Local models stay loaded between takes and start warming at launch, so
+there's no long stall on the first dictation of the session. Takes
+under 0.3 s are discarded as slips of the finger, and a transcription
+that never comes back gives up after 60 seconds rather than leaving
+dictation wedged until you relaunch.
+
+Dictation can also be fired from a Shortcut, from Siri, or with
+`stenobar://dictate` — see [Automation & integrations](#automation--integrations).
+
 ### Thoughts
 
 Settings → Thoughts. A second dictation pipeline for capturing
@@ -261,8 +307,8 @@ fleeting ideas without losing flow. Press one of the dedicated global
 hotkeys — hold-to-capture, tap-to-toggle, or a single held modifier
 key — speak, and Stenobar:
 
-1. Transcribes the utterance locally (same engine as the dictation
-   hotkey).
+1. Transcribes the utterance with the dictation speech engine
+   (Settings → Speech).
 2. Sends the transcript to a **router** that classifies it as one of
    four categories: Task, Note, Reminder, or Review later.
 3. **Routes** the result to whichever destination you've mapped to that
