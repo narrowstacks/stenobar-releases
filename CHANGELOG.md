@@ -6,6 +6,63 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.27] - 2026-08-18
+
+### Fixed
+- The Settings window's sidebar and detail panes no longer wash out to gray
+  in dark mode when a bright window sits behind them.
+- Integration tiles now list everything a provider is actually used for.
+  Parakeet, WhisperKit, Apple Speech, AssemblyAI and Deepgram show their
+  dictation and Thoughts-capture role, and Apple Intelligence shows that it
+  writes summaries as well as routing thoughts — so the pane answers "what
+  breaks if I remove this?" correctly.
+
+### Added
+- The recording panel now pre-selects the app you're in a call with: a meeting
+  app (Zoom, Teams, Webex, …) or a browser (Google Meet, telehealth sessions)
+  while it is actually using your microphone — an app that is merely open is
+  left alone. It only fills in the source when you haven't chosen one yourself,
+  it offers once per call, and it's one click to change. Edit both lists — or
+  switch it off — in Settings → Recording → Source. Stenobar only checks which
+  apps are on the mic; it never listens in, and it never accesses the camera.
+- Transcripts of recordings that captured both your microphone and system audio
+  now say who spoke, based on the audio itself: your side is labelled "Me" and
+  the other side is labelled separately. It works with every transcription
+  provider, runs entirely on your Mac, and follows the existing Speaker labels
+  setting.
+- You can call yourself something other than "Me" in transcripts: set a name in
+  Settings → Transcription → Speakers, or per project in Settings → Projects.
+  It applies to transcripts made from then on; ones you already have keep the
+  labels they were written with.
+- Recordings can now stop themselves after a configurable stretch of silence
+  (off by default — Settings → Recording → Auto-stop), with an on-screen
+  countdown you can cancel by making noise.
+
+### Fixed
+- Recording presets got a polish pass: applying a preset now also switches the
+  hotkey's microphone; presets can be renamed; deleting asks for confirmation;
+  saving over an existing name updates it instead of duplicating; preset
+  subtitles show app names instead of bundle-ID fragments; and the preset
+  section no longer vanishes when you have none.
+- Local transcription models already on disk are found again after a settings
+  reset or a fresh install, instead of being reported missing and offered as a
+  ~600 MB re-download. Stenobar also notes in diagnostics when a model has been
+  downloaded twice, so the duplicate can be reclaimed deliberately.
+- Release notes in the updater render **bold** text, `code` spans, and angle
+  brackets properly instead of showing the raw markdown asterisks and dropping
+  anything inside `<>`.
+- Dictated thoughts that name a list rather than an action no longer get an
+  invented verb in their title — "Shopping list for tomorrow" is filed as
+  "Shopping list", not "Generate shopping list".
+- Very long recordings (over ~6 hours at default quality) now warn and stop
+  cleanly before hitting the WAV format's 4 GB limit, instead of crashing or
+  producing a truncated file.
+- Quitting right after a recording stops no longer silently abandons the
+  finishing work. Stenobar asks whether to wait while it stitches, transcribes,
+  and compresses, and offers Quit Anyway when you'd rather not. An interrupted
+  stitch is also redone next time instead of leaving a truncated combined track
+  that playback would prefer.
+
 ## [1.0.0-beta.26] - 2026-08-17
 
 ### Fixed
