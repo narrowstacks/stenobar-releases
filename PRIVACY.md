@@ -27,6 +27,43 @@ While running, Stenobar can capture:
 
 Recordings are saved as raw 16-bit PCM WAV files in the folder you choose during onboarding (default: `~/Documents/Stenobar/recordings/`). You can change the location at any time in Settings → General.
 
+## Meeting detection
+
+Stenobar can notice when you join a call and offer to record it. New installations ask by default; an installation upgraded from an earlier version keeps the previous behaviour, which only fills in the source when you open the recording panel. Either way it can be switched off entirely in Settings → Recording → Source ("Do nothing"), which stops every read described below.
+
+To decide whether a call is happening, Stenobar reads three things about **other applications on your Mac**:
+
+- **Which processes are using the microphone**, via CoreAudio's process properties. This reports only that an app has the microphone open, never any audio from it. Stenobar does not listen to, capture, or analyse other apps' microphone input.
+- **Window titles of those apps**, via ScreenCaptureKit, under the Screen Recording permission Stenobar already holds to capture system audio. This is what distinguishes a video call from a browser tab playing music. **No screen contents, screenshots, or video frames are read**, only the title string.
+- **Whether the camera is in use**, as a single system-wide yes/no flag. macOS does not attribute this to a process, and Stenobar never accesses the camera itself. It has no camera permission and requests none.
+
+Stenobar does **not** read browser tab contents, page URLs, or anything requiring Accessibility permission for this feature.
+
+All three signals are evaluated on your Mac and used only to decide whether to show the prompt. **None of them is transmitted anywhere, and window titles are never written to the diagnostics log.** The log records only the verdict (call, waiting room, not a call) and the app's bundle identifier, because a title can name a person or an appointment.
+
+### Optional: naming the meeting from your calendar
+
+Off by default. If you connect your calendar in Settings → Calendar, Stenobar reads events from the macOS Calendar app so the prompt can name the meeting rather than only the app. This covers whatever accounts you have added to Calendar, including Google, Outlook/Exchange and other CalDAV accounts, because macOS syncs them into the same local database. Stenobar does not connect to Google, Microsoft, or any calendar provider directly, and holds no account credentials.
+
+- **You choose which calendars are read.** Settings → Calendar lists them grouped by account. Stenobar asks the system only for events in the calendars you ticked, so an unticked calendar is never read, not merely filtered out afterwards. Ticking nothing reads nothing.
+- **Disconnecting clears every calendar setting**, including which calendars were selected, so reconnecting starts fresh. It cannot revoke the permission macOS granted; that stays until you remove it in System Settings → Privacy & Security → Calendars, and the pane says so.
+
+- **Calendar access is requested only when you press Connect, and never at launch or during onboarding.** Leave it disconnected and Stenobar never asks, never creates a connection to the calendar database, and reads nothing from it.
+- Only events within 15 minutes of the call are considered, and only events with two or more participants, so a block you put on your own calendar is not treated as a meeting. Settings → Calendar can relax the participant rule for events that carry a meeting link, for appointments booked by the other side.
+- **A call is only named when the calendar corroborates it.** Stenobar compares the meeting service named in the window title against the service the event's link points at. If they disagree, or if it cannot tell, the prompt names the app instead. It never assumes a call is a meeting just because that meeting is scheduled nearby.
+- For each such event Stenobar reads the title, the start and end times, the number of participants, and whether the URL, notes or location field contains a link to a conferencing service. It reads no other event content, no participant names or addresses, and nothing outside that 15-minute window. It never writes to your calendar.
+- The meeting name is used only to label the prompt on screen. **It is never written to the diagnostics log and never transmitted anywhere.** The log records only whether a name was found.
+
+#### Optional: reminders before a meeting starts
+
+A second setting, "Remind me before a meeting starts", is also off by default and requires the calendar to be connected. When it is on, Stenobar offers to join and record a meeting shortly before it begins, at a lead time you choose.
+
+- This is the one case where Stenobar looks at your calendar while nothing is using the microphone, because a reminder has to arrive before the call does. That read happens at most once every 30 seconds, only while the reminder setting is on, and never at all when meeting detection is set to "Do nothing".
+- The reminder appears only for events that pass both filters: two or more participants, and a link to a conferencing service in the event's URL, notes or location field.
+- Choosing "Open and record" opens that link in your default browser or app, exactly as clicking it in Calendar would, and arms Stenobar to record once it detects the call has started. **Nothing is recorded before the call is detected.**
+- While Stenobar is waiting for the meeting, its name is shown in the menu bar's tooltip and in the menu itself. Both are on-screen only.
+- The meeting's name is never written to the diagnostics log. The log records only how many minutes away the meeting was and whether it carried a link.
+
 ## Third-party transcription and summary providers
 
 Stenobar lets you select a transcription backend (Settings → Transcription) and a summary backend (Settings → Summary). Some run entirely on your Mac; some are cloud services operated by third parties.
@@ -75,7 +112,7 @@ This is the one point where our infrastructure touches the connect flow at all; 
 | Permission | Why | Required? |
 |---|---|---|
 | Microphone | To record your voice | Yes, if microphone capture is enabled |
-| Screen Recording | ScreenCaptureKit needs this to capture system audio. No video is recorded. | Yes |
+| Screen Recording | ScreenCaptureKit needs this to capture system audio, and to read window titles for meeting detection. No video is recorded and no screen contents are read. | Yes |
 | Speech Recognition | Powers the live transcript inside the dictation HUD when using Apple's on-device model | Optional |
 | Accessibility | Lets dictation paste the result into the focused app. Without it, dictation falls back to clipboard copy. | Optional |
 | Notifications | Banner when a transcription or summary completes in the background | Optional |
@@ -85,7 +122,7 @@ You can revoke any of these in System Settings → Privacy & Security at any tim
 
 ## Diagnostics
 
-Stenobar writes a local diagnostics log at `~/Library/Application Support/Stenobar/diagnostics.log`. This file stays on your machine. It is never uploaded. Verbose diagnostics are off by default and can be toggled in Settings.
+Stenobar writes a local diagnostics log at `~/Library/Application Support/Stenobar/diagnostics.log`. This file stays on your machine. It is never uploaded. Verbose diagnostics are off by default and can be toggled in Settings. Window titles read for meeting detection are never written to it.
 
 ## Deleting your data
 

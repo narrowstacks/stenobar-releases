@@ -6,6 +6,46 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.28] - 2026-08-20
+
+### Added
+- Stenobar now offers to record when you join a call, without you opening
+  anything. A small panel names what it noticed, the app and whether you're
+  in the call or still in a waiting room, and offers Yes, No, and Ignore for
+  now. It waits for an answer instead of disappearing on its own, and you can
+  pick which project the recording goes to before answering. It also knows the
+  difference between a call and a browser tab that is simply playing
+  something, so music and videos don't set it off. Choose between offering,
+  the old pre-select-only behaviour, and off entirely in Settings → Recording
+  → Source. Existing installs keep pre-select-only until you change it.
+- The meeting prompt can hang off the top of the screen in a notch /
+  Dynamic Island style, or float below the menu bar as a card. It picks the
+  notch style automatically on a Mac that has one, and you can override it
+  either way in Settings → Recording → Source → Prompt style.
+- The meeting prompt now animates in and out instead of appearing all at once.
+  The floating card drops in from above the menu bar and settles; the notch
+  style starts as a small pill at the top of the screen and expands outwards,
+  with the text arriving as the shape finishes. Dismissing it plays the same
+  motion in reverse. With Reduce Motion turned on in System Settings it simply
+  fades, and nothing travels.
+- The meeting prompt can play a soft sound when it appears, off or on, with a
+  choice of tones you can preview before picking one. Settings → Recording →
+  Source.
+
+### Changed
+- Stenobar has a new app icon. It picks up the depth and lighting macOS
+  applies to icons on this release, and the microphone artwork was redrawn so
+  its edges stay crisp instead of showing a faint seam across the stand. The
+  waveform inside the microphone is spaced more widely so it still reads at
+  Dock and Finder sizes.
+
+### Fixed
+- Sending a thought to Apple Reminders could fail silently, with no reminder
+  created and no error shown. Stenobar was missing the macOS permission
+  entitlement it needs to reach your Reminders, so the system refused access
+  without ever asking you. You may see a Reminders permission prompt once
+  after updating.
+
 ## [1.0.0-beta.27] - 2026-08-18
 
 ### Fixed
