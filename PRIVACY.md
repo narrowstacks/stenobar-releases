@@ -2,7 +2,7 @@
 
 **Effective date:** 2026-05-10
 **Publisher:** narrowstacks, the maintainers of Stenobar ("we", "our", "us")
-**Contact:** aaron+stenobar@affords.art · [open an issue](https://github.com/narrowstacks/stenobar/issues)
+**Contact:** aaron+stenobar@affords.art · [open an issue](https://github.com/narrowstacks/stenobar-releases/issues)
 
 This policy describes what data Stenobar handles and what we, the publisher, do with it.
 
@@ -25,7 +25,17 @@ While running, Stenobar can capture:
 - **Microphone audio** from the input device you select. Optional.
 - **No video.** ScreenCaptureKit is used for its audio path; video frames are never read, written, or transmitted.
 
+The menu bar's Sound and Microphone cards each have a Test levels button, which shows a live input level so you can check a source is picking up audio before you record. Testing opens that source, so macOS shows its recording indicator while it runs — the orange microphone dot for the microphone, the screen-recording indicator for system audio. It only ever runs when you press the button: opening the menu does not start it. Nothing is written to disk or transmitted, the level is measured and discarded buffer by buffer, and the test stops when you press Stop, when the menu closes, when you switch that source off, or when a recording starts.
+
 Recordings are saved as raw 16-bit PCM WAV files in the folder you choose during onboarding (default: `~/Documents/Stenobar/recordings/`). You can change the location at any time in Settings → General.
+
+### Dictation history
+
+When you use dictation (paste-into-app or copy-to-clipboard), Stenobar can keep a local history of what was dictated: the transcript text, the engine and model used, how long you spoke, and the name of the app the text was delivered to. This history is stored on your Mac in Application Support and is never transmitted anywhere. You can turn it off entirely, stop recording the target app, or have entries deleted automatically after a period from 7 days to a year, all in Settings → Dictation.
+
+On iPhone and iPad, the same history stores the transcript text, the speech engine used, how long you spoke, and how the text was delivered, but never which app it was delivered to: iOS gives apps no way to ask which app is frontmost, and a keyboard extension has no way to learn its host app's identity either, so there is nothing to record. The database lives in Stenobar's own app container, not in a shared App Group, and never leaves your device. You can turn history off entirely or have entries deleted automatically, in Settings → Dictation.
+
+Stenobar stores the ten most recent dictation transcripts (truncated) in the app group container so the keyboard can offer them for re-insertion without speaking again; this happens regardless of Full Access, but Allow Full Access is what lets the keyboard extension actually read that container. They never leave your device, and are removed when you clear your history or turn it off.
 
 ## Meeting detection
 
@@ -88,24 +98,27 @@ When you select one of these, you are sending data to a third party governed by 
 | OpenAI (transcription) | `api.openai.com` | Audio | https://openai.com/policies/row-privacy-policy/ |
 | Groq | `api.groq.com` | Audio | https://groq.com/privacy-policy/ |
 | Google Cloud | `speech.googleapis.com` | Audio | https://cloud.google.com/terms/data-processing-addendum |
+| ElevenLabs | `api.elevenlabs.io` | Audio | https://elevenlabs.io/privacy-policy (data is stored in the United States; your audio and transcript are retained in your ElevenLabs account history, since zero retention mode is enterprise-only and cannot be requested from Stenobar; ElevenLabs states it may use your data to train its AI models, with an opt-out under Data use in your account's Terms and Privacy settings) |
+| Soniox | `api.soniox.com` | Audio | https://soniox.com/policies/privacy-policy (Soniox states it does not use customer audio or transcripts to train or improve its models; audio and transcripts stored by the async API are deleted automatically after 30 days, and Stenobar deletes both as soon as it has fetched the transcript; data stays in the region your Soniox project was created in, and Stenobar uses the default United States endpoint) |
 | OpenAI (summary) | `api.openai.com` | Transcript text | https://openai.com/policies/row-privacy-policy/ |
 | Anthropic | `api.anthropic.com` | Transcript text | https://www.anthropic.com/legal/privacy |
 | OpenRouter | `openrouter.ai` | Transcript text | https://openrouter.ai/privacy (plus the upstream model provider you select, each with its own policy) |
+| Google Gemini | `generativelanguage.googleapis.com` | Audio (transcription, beta, and dictation) and transcript text (summary, thoughts routing) | https://ai.google.dev/gemini-api/terms (on the free tier Google uses your prompts and responses to improve its products and human reviewers may read them; paid-tier keys and users in the EU, UK, and Switzerland are excluded) |
 | Custom OpenAI-compatible endpoint | URL you configure | Transcript text | Whatever that endpoint publishes — we cannot know in advance |
 
 API keys you provide for these services are stored in your macOS Keychain, scoped to Stenobar (service prefix `com.narrowstacks.Stenobar`). They are not transmitted anywhere except to the corresponding provider when you make a request.
 
 ## Connecting accounts (OAuth)
 
-Some Thoughts destinations (Notion, TickTick) connect with OAuth instead of a pasted API key. Two of these providers require an HTTPS redirect URL and will not redirect to a local address, so the sign-in flow routes through a small page we host at `https://stenobar.app/oauth/<provider>`.
+Some Thoughts destinations (Notion, TickTick, Todoist) connect with OAuth instead of a pasted API key. These providers require an HTTPS redirect URL and will not redirect to a local address, so the sign-in flow routes through a small page we host at `https://stenobar.app/oauth/<provider>`. (On iPhone and iPad, Todoist redirects straight back into the app instead.)
 
 **What this page does and does not see:**
 
 - When you approve access, the provider redirects your browser to that page with a **one-time authorization code**. That code momentarily passes through stenobar.app's hosting (and may appear in standard edge/CDN request logs) before the page hands it back to Stenobar running on your Mac.
-- The page **never receives your access token, and never receives any of your account data.** It forwards only the short-lived code.
-- The actual exchange — swapping that code for an access token — happens **directly from your Mac to the provider**. The resulting token is stored only in your macOS Keychain. The code is single-use and useless without the application's client secret, which is built into the app and never leaves your Mac.
+- The page **never receives any of your account data.** It forwards only the short-lived code.
+- Swapping that code for an access token needs the application's client secret. For **Notion** the secret is built into the app, so the exchange happens directly from your Mac to Notion. For **TickTick and Todoist** the secret is held server-side instead of shipped in the app, so the app sends the code to `https://stenobar.app/api/oauth/exchange`, which forwards it to the provider and returns the provider's token response. For those two, the access token passes through stenobar.app in transit. We do not log or store it; it is written only to your Keychain.
 
-This is the one point where our infrastructure touches the connect flow at all; it carries no audio, no transcripts, no tokens, and no readable account data.
+This is the one point where our infrastructure touches the connect flow at all; it carries no audio, no transcripts, and no readable account data.
 
 ## macOS permissions Stenobar requests
 
@@ -140,4 +153,4 @@ If we change this policy, the updated version will be published at the same loca
 
 ## Contact
 
-Questions about this policy: aaron+stenobar@affords.art. You can also open an issue at https://github.com/narrowstacks/stenobar/issues.
+Questions about this policy: aaron+stenobar@affords.art. You can also open an issue at https://github.com/narrowstacks/stenobar-releases/issues.

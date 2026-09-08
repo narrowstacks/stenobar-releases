@@ -6,6 +6,103 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.29] - 2026-09-07
+
+### Added
+- The menu bar has tabs for Record, Dictate and Thoughts. Each has a start
+  button, shows its shortcut and the source or model it will use, and says
+  what it last did; clicking the last recording opens it.
+- Test levels on the Sound and Microphone cards checks a source is picking up
+  audio before you record. Nothing is written or sent anywhere.
+- Two new transcription providers, both marked beta: ElevenLabs Scribe v2
+  (speaker labels, 90+ languages) and Soniox (speaker labels, 60+ languages,
+  roughly $0.10 per hour). Both also stream dictation and Thoughts from
+  Settings > Speech using the same key.
+- Google Gemini across the app: transcription (beta), streaming dictation,
+  summaries and Thoughts on one key. Flash models have a free tier on which
+  Google may use your text; the app says so before you save a key.
+- OpenRouter has a searchable model catalogue with pricing, Auto Router and
+  Free Models Router, with separate spending limits for summaries and
+  Thoughts.
+- Ollama model fields list what you have already pulled, suggest models that
+  fit this Mac, and can download one from inside Settings.
+- Dictation History: a window listing every dictation with its text, engine,
+  duration and target app, plus `stenobar://history` links and Shortcuts
+  actions. Settings > Dictation can turn it off or auto-delete it.
+- Dictation and Thoughts have their own spoken-language picker, and Gemini
+  transcription has a Language setting.
+- Automatic cleanup posts a notification saying how many recordings went to
+  the Trash, and Settings > Recording > Retention shows the last cleanup.
+- Imported recordings show when they were imported as well as when they were
+  recorded.
+- Settings > Recording warns when notifications are off and auto-stop is on,
+  since the countdown before an automatic stop then only shows in the menu
+  bar.
+
+### Changed
+- Stenobar never stops a recording on its own without warning you first. For
+  silence or the 4 GB WAV limit you get a countdown with a Keep Recording
+  button, in the menu bar and as a notification; at the file limit you can
+  keep going once, for a couple of minutes.
+- The menu is reorganised: Start Recording sits at the top and says what it
+  will capture, Sound and Microphone are two cards with their own switches,
+  the app list opens on demand, and Recordings, Thoughts and Dictation
+  History moved into the icon strip at the bottom. Return starts recording,
+  Tab and Space work the cards, and Escape closes the app list.
+- The Preset section stays out of the menu until you save a preset.
+- In Thoughts, search sits in the sidebar like the Recordings window, and the
+  status, category and destination filters moved to a toolbar Filter menu
+  that shows how many are on.
+- Recording settings previews each meeting prompt layout, and summaries and
+  Thoughts name the model OpenRouter's Auto Router actually used.
+- The Apple Reminders tile in Settings > Integrations reads "Built-in
+  Reminders list".
+
+### Fixed
+- Choosing Google Gemini for dictation or Thoughts without a key says so
+  before you speak, instead of after a whole take.
+- Cancelling a TickTick, Todoist or Notion sign-in shows a "sign-in
+  cancelled" page instead of claiming success, and the page after connecting
+  no longer sometimes fails to load.
+- A one-word non-answer from a model is no longer offered as a recording
+  title.
+- Recordings recovered after a crash or force quit keep their project and
+  their import status.
+- The microphone and application lists update while the menu is open, and a
+  device connected after launch shows up without switching tabs.
+- Moving a recording into another project right after opening the Recordings
+  window works again.
+- A library, Thoughts store or dictation history that cannot be opened no
+  longer stops Stenobar launching. The app says nothing is being saved this
+  session and leaves the file untouched.
+- An edit made just before quitting is retried on quit instead of lost after
+  one failed save.
+- Imported recordings are never auto-deleted by the retention sweep. Check
+  the Trash if an older import went missing.
+- Failed or cancelled transcriptions no longer leave their working audio copy
+  on disk.
+- Onboarding saves an API key only when you press Save, and Skip discards an
+  unsaved key.
+- Moving recordings between projects, or deleting a project, no longer loses
+  their audio. A move that cannot be completed is refused with an explanation.
+- Non-English dictation works on the cloud engines, and WhisperKit transcribes
+  other languages instead of translating them into English.
+- Dictation keeps the first words of a take on a slow connection.
+- Per-project overrides list every transcription model and allow speaker
+  labels for Parakeet and Gemini.
+- Thoughts remembers a classification model per provider.
+- Reasoning models no longer leak their thought process into summaries,
+  titles, tags or Thoughts, and OpenRouter free-model routing rejects
+  unusable results.
+- Saved summaries keep their opening heading and drop the provenance header,
+  and failed ones offer Try Again.
+- Switching recordings no longer leaks transcript, summary or in-flight edits
+  between them, and a suggestion in flight finishes against the recording it
+  started on.
+- A recording whose transcription failed says so with a retry, in the list
+  and as a notification; one whose combined track could not be created
+  explains why.
+
 ## [1.0.0-beta.28] - 2026-08-20
 
 ### Added
