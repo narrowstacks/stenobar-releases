@@ -6,6 +6,89 @@ follows semantic versioning.
 
 ## [Unreleased]
 
+## [1.0.0-beta.30] - 2026-09-20
+
+### Added
+- Thoughts can be classified by TypeSafe Jev, a fast decision model that
+  picks task, note, reminder, or review with a calibrated confidence, while
+  Apple Intelligence (or any other provider you choose) still writes the
+  title and description. Add the key under Settings > Integrations, then
+  pick "TypeSafe Jev" under Settings > Thoughts > Classify with. In our
+  tests it fixed the two things the on-device router gets wrong most: a
+  time-only reminder ("at 5:30 pick up Emma") filed as a task, and mumbled
+  or empty captures filed as notes instead of held for review.
+- A summary made by a reasoning model now says so: a short "The model reasoned
+  before answering." note sits under the finished summary whenever the model's
+  thinking was removed from the output. It lasts for the session and is
+  worked out afresh each time you summarize.
+- The File menu now covers the library's main actions: New Recording (⌘N),
+  Start Recording with Last Settings (⇧⌘R), Stop Recording (⌘.), Add Marker
+  (⇧⌘M), Import Audio Files (⇧⌘I), Import with Options (⌥⇧⌘I), Import
+  Split-Track Pair, New Project (⇧⌘N) and Export Audio (⌘E). Each opens the
+  Recordings window first if it is not already showing.
+- The import sheet's Tags field lists your existing tags as clickable chips
+  and narrows them as you type; entering a tag you already use keeps its
+  existing spelling.
+- Dictation can clean up what you said before it is pasted: Settings >
+  Dictation > Cleanup offers Punctuate and tidy, Format, or your own
+  instruction, with a per-app override. It is off by default, runs on the
+  provider set under Settings > Summary > Tags & title, pastes the raw
+  transcript if it is slow or fails, and Dictation History keeps the original
+  under "As dictated".
+- Importing audio now asks what to do with the batch first: rename files,
+  drop one, pair a microphone and system file, pick the project and tags, and
+  choose whether to transcribe and let the transcript name and tag each
+  recording. The sheet shows each file's length and names any file it cannot
+  read; tick "Don't ask again" to import straight through, and hold Option or
+  use Settings > Library to bring the sheet back.
+- Microsoft MAI-Transcribe joins the transcription providers, marked beta: 60
+  languages including mid-sentence switching, key terms, speaker labels on
+  recordings under about 15 minutes, and long recordings split automatically.
+  It needs an Azure Speech resource (eastus, northeurope, southeastasia or
+  westus) entered under Settings > Integrations and Settings > Transcription;
+  Microsoft calls it a preview with no service level agreement and a
+  promotional price through 2026.
+- Settings > Summary > Tags & title chooses whether name and tag suggestions
+  read the summary or the transcript. They now read the summary when there is
+  one, which is faster, cheaper and works on long recordings.
+- The library index at `~/Library/Application Support/Stenobar/index.json`
+  carries `importedAt`, so scripts and search extensions can sort and filter
+  imports by date.
+
+### Changed
+- Importing no longer suggests pairing two files whose lengths are nothing
+  alike; you can still pair any two files yourself.
+- A recording's header now reads "Suggest title" and "Suggest tags" with
+  different icons, and the date joins the duration line (full dates are in
+  the info popover), so the transcript starts higher up.
+- The menu-bar icon and the app icon are now the same steno-key mark, redrawn
+  to stay crisp at menu-bar size.
+- A thought's detail no longer repeats the same sentence as title,
+  description and capture, and the Router line has moved to a Diagnostics
+  section shown with verbose logging.
+
+### Fixed
+- Thoughts no longer stamp today's date on everything you dictate. A thought
+  with no date or time in it now arrives in Reminders, Todoist, TickTick,
+  Things or a Shortcut with no due date at all.
+- Saying a weekday sets the right day. "Friday at 3pm" now means this coming
+  Friday at 3pm instead of some other day next week, and a thought that names
+  only a day keeps the day without inventing a time.
+- The Window menu no longer shows a blank, clickable row above Recordings.
+- Dark mode no longer lets the desktop wash through the Recordings and
+  Thoughts windows: every window uses the same backdrop as Settings, and
+  Reduce Transparency makes it opaque.
+- Rows fade out beneath the toolbar as you scroll instead of colliding with
+  its buttons, and the scroll bar starts below the toolbar.
+- A failed dictation no longer looks like it is still recording: the HUD turns
+  dark grey with a red outline, and the live caption is just "preview".
+- Work interrupted by a quit or force quit (a transcription, export, re-encode
+  or Finder drag) no longer leaves a recording-sized file behind; leftovers
+  are cleared at launch.
+- The meeting prompt's buttons say what they do: Record is the default in
+  your accent colour, "Not this call" stays quiet for the call, and "Remind me
+  in 5 min" asks again. The same applies to the upcoming-meeting reminder.
+
 ## [1.0.0-beta.29] - 2026-09-07
 
 ### Added
